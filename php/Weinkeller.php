@@ -6,9 +6,14 @@
  * Time: 17:51
  */
 
+define(HOST, localhost);
+define(USER, pi);
+define(PASSWORD, raspberry);
+define(DATABASE, Weinkeller);
+
 if ($_POST["function"] == "outputRegal")
 {
-    $connection = mysqli_connect(localhost, pi, raspberry, Weinkeller);
+    $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
     } else {
@@ -26,7 +31,7 @@ if ($_POST["function"] == "outputRegal")
 
 
 if($_GET["q"] == "fandr") {
-    $connection = mysqli_connect(localhost, pi, raspberry, Weinkeller);
+    $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
     } else {
@@ -44,6 +49,24 @@ if($_GET["q"] == "fandr") {
             array_push($flaschen, $row);
         }
         echo json_encode(["flaschen" => $flaschen, "regal" => $regal]);
+    }
+    mysqli_close($connection);die();
+}
+
+if($_GET["q"] == "bottleInfo") {
+    $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
+    if (mysqli_connect_errno($connection)) {
+        echo "Failed to connect to DataBase: " . mysqli_connect_error();
+    } else {
+        $id = $_GET["id"];
+        $query = "SELECT * FROM Flaschen WHERE id=$id";
+        $result = mysqli_query($connection, $query);
+
+        $flaschen = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            array_push($flaschen, $row);
+        }
+        echo json_encode($flaschen);
     }
     mysqli_close($connection);die();
 }

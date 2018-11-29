@@ -9,8 +9,7 @@ $(document).ready(function () {
             $.each(json, function (key, value) {
                 if (value.flasche != 0) {
                     console.log("found one");
-                    $(".place#f-" + (key + 1) + " i").removeClass("far");
-                    $(".place#f-" + (key + 1) + " i").addClass("fas");
+                    $(".place#f-" + (key + 1) + " i").removeClass("far").addClass("fas");
                     $(".place#f-" + (key + 1) + "").addClass("taken");
                     if (value.type === "Rotwein") {
                         $(".place#f-" + (key + 1) + " i").addClass("red");
@@ -29,11 +28,37 @@ $(document).ready(function () {
 
     $(".place").on("click", function (e) {
         if($(this).hasClass("taken")) {
-            // show infos or drink
+            $(".modal-title").empty().append("Gewählte Flasche");
+            $(".btn-primary").empty().append("Trinken");
+            $(".modal-body").empty();
+
+            let shelf = parseInt($(this).attr("id").substr(2));
+            console.log("shelf " + shelf);
+            $.ajax({
+                url: "../php/Weinkeller.php",
+                data: {
+                    q: "bottleInfo",
+                    id: shelf
+                },
+                type: "GET",
+                success: function (data) {
+                    let bottles = JSON.parse(data);
+                    console.log(bottles);
+
+                    $(".modal-title").empty().append(bottles[0]["name"]);
+                    $(".modal-body").append("Typ     : " + bottles[0]["type"] + "<br>");
+                    $(".modal-body").append("Jahrgang: " + bottles[0]["jahr"] + "<br>");
+                    $(".modal-body").append("Land    : " + bottles[0]["land"] + "<br>");
+                    $(".modal-body").append("Region  : " + bottles[0]["region"] + "<br>");
+                    $(".modal-body").append("Weingut : " + bottles[0]["weingut"] + "<br>");
+                    $(".modal-body").append("Stück   : " + bottles[0]["anzahl"] + "<br>");
+                }
+            });
 
         } else {
-            // show put table
-
+            $(".modal-title").empty().append("Platzierbare Flaschen");
+            $(".btn-primary").empty().append("Platzieren");
+            $(".modal-body").empty();
 
             $.ajax({
                 url: "../php/Weinkeller.php",
@@ -51,7 +76,7 @@ $(document).ready(function () {
                     });
                     $.each(items["regal"], function(key, value){
                         if(value.flasche != 0) {
-                            freeBottles[value.flasche] = freeBottles[value.flasche] - 1;
+                            freeBottles[value.flasche]--;
                         }
                     });
 
@@ -75,8 +100,7 @@ $(document).ready(function () {
         $('#put-form-modal').modal();
     });
 
-    $("#closeBtn").on("click", function (e) {
-        $(".modal-body").remove();
-        console.log("Removed entries");
+    $(".btn-primary").on("click", function (e) {
+       console.log("Drink!");
     });
 });
