@@ -5,10 +5,7 @@ $(document).ready(function () {
         data: {function: "outputRegal"},
         success: function (data) {
             let json = JSON.parse(data);
-
             console.log(json);
-
-            //$("#test").append('<table border="1"><tr><td>Stellplatz</td><td>Flaschen ID</td></tr>');
             $.each(json, function (key, value) {
                 if (value.flasche != 0) {
                     console.log("found one");
@@ -36,6 +33,8 @@ $(document).ready(function () {
 
         } else {
             // show put table
+
+
             $.ajax({
                 url: "../php/Weinkeller.php",
                 data: {
@@ -44,14 +43,40 @@ $(document).ready(function () {
                 type: "GET",
                 success: function (data) {
                     let items = JSON.parse(data);
-                    console.log(items);
+
+                    //Calculate unplaced bottles
+                    let freeBottles = new Array();
+                    $.each(items["flaschen"], function(key, value){
+                            freeBottles[value.ID] = value.anzahl;
+                    });
+                    $.each(items["regal"], function(key, value){
+                        if(value.flasche != 0) {
+                            freeBottles[value.flasche] = freeBottles[value.flasche] - 1;
+                        }
+                    });
+
+                    $.each(freeBottles, function(bottleID, num)
+                    {
+                       if(num >= 0 && bottleID != 0){
+                           $(".modal-body").append("x" + num + " " + items["flaschen"][bottleID - 1].name + "<br>");
+                       }
+                    });
                 },
                 error: function (data) {
 
                 }
 
             });
+
+
+
+
         }
         $('#put-form-modal').modal();
-    })
+    });
+
+    $("#closeBtn").on("click", function (e) {
+        $(".modal-body").remove();
+        console.log("Removed entries");
+    });
 });
