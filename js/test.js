@@ -1,29 +1,6 @@
 $(document).ready(function () {
-    $.ajax({
-        url: "../php/Weinkeller.php",
-        type: "POST",
-        data: {function: "outputRegal"},
-        success: function (data) {
-            let json = JSON.parse(data);
-            console.log(json);
-            $.each(json, function (key, value) {
-                if (value.flasche != 0) {
-                    console.log("found one");
-                    $(".place#f-" + (key + 1) + " i").removeClass("far").addClass("fas");
-                    $(".place#f-" + (key + 1) + "").addClass("taken");
-                    if (value.type === "Rotwein") {
-                        $(".place#f-" + (key + 1) + " i").addClass("red");
-                    } else if (value.type === "Weißwein") {
-                        $(".place#f-" + (key + 1) + " i").addClass("white");
-                    }
-                    console.log($(".place#f-" + (key + 1) + ""));
-                }
-            });
-        },
-        error: function () {
-            console.log("AJAX Call failed");
-        }
-    });
+
+    drawRack();
 
     $(".place").on("click", function (e) {
         let shelf = parseInt($(this).attr("id").substr(2));
@@ -82,12 +59,18 @@ $(document).ready(function () {
                         }
                     });
 
+                    let empty = true;
                     $.each(freeBottles, function(bottleID, num)
                     {
-                       if(num >= 0 && bottleID != 0){
+                       if(num > 0 && bottleID != 0){
                            $(".modal-body").append("x" + num + " " + items["flaschen"][bottleID - 1].name + "<br>");
+                           empty = false;
                        }
                     });
+                    if(empty){
+                        $(".modal-body").append("Keine Flaschen verfügbar.<br> Alle Flaschen sind bereits im Regal platziert.");
+                    }
+
                 },
                 error: function (data) {
                     console.log("AJAX call failed");
@@ -102,7 +85,14 @@ $(document).ready(function () {
         console.log("Shelf: " + shelf);
         if($(".modal-content").attr('data-fTaken') == 1) {
             console.log("Drink!");
-            
+            $.ajax({
+                url: "../php/Weinkeller.php",
+                data: {
+                    q: "drinkBottle",
+                    shelf: shelf
+                },
+                type: "POST"
+            });
 
         } else {
             console.log("Place!");
@@ -111,3 +101,31 @@ $(document).ready(function () {
         }
     });
 });
+
+function drawRack(){
+    $.ajax({
+        url: "../php/Weinkeller.php",
+        type: "POST",
+        data: {function: "outputRegal"},
+        success: function (data) {
+            let json = JSON.parse(data);
+            console.log(json);
+            $.each(json, function (key, value) {
+                if (value.flasche != 0) {
+                    console.log("found one");
+                    $(".place#f-" + (key + 1) + " i").removeClass("far").addClass("fas");
+                    $(".place#f-" + (key + 1) + "").addClass("taken");
+                    if (value.type === "Rotwein") {
+                        $(".place#f-" + (key + 1) + " i").addClass("red");
+                    } else if (value.type === "Weißwein") {
+                        $(".place#f-" + (key + 1) + " i").addClass("white");
+                    }
+                    console.log($(".place#f-" + (key + 1) + ""));
+                }
+            });
+        },
+        error: function () {
+            console.log("AJAX Call failed");
+        }
+    });
+}

@@ -53,6 +53,22 @@ if($_GET["q"] == "fandr") {
     mysqli_close($connection);die();
 }
 
+if($_POST["q"] == "drinkBottle") {
+    $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
+    if (mysqli_connect_errno($connection)) {
+        echo "Failed to connect to DataBase: " . mysqli_connect_error();
+    } else {
+        $shelf = $_POST["shelf"];
+
+        $query1 = "UPDATE Flaschen SET anzahl = anzahl-1  WHERE ID = (SELECT Regal.flasche FROM Regal WHERE Regal.ID=$shelf)";     //Decerement bottle stock
+        $query2 = "UPDATE Regal SET flasche=0 WHERE ID = $shelf";                //Remove bottle from rack
+
+        $result1 = mysqli_query($connection, $query1);
+        $result2 = mysqli_query($connection, $query2);
+    }
+    mysqli_close($connection);die();
+}
+
 if($_GET["q"] == "bottleInfo") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
