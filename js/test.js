@@ -19,7 +19,6 @@ $(document).ready(function () {
                     console.log($(".place#f-" + (key + 1) + ""));
                 }
             });
-            //$("#test").append('</table>');
         },
         error: function () {
             console.log("AJAX Call failed");
@@ -27,13 +26,15 @@ $(document).ready(function () {
     });
 
     $(".place").on("click", function (e) {
+        let shelf = parseInt($(this).attr("id").substr(2));
+        $(".modal-content").attr("data-fID",shelf);
+
         if($(this).hasClass("taken")) {
             $(".modal-title").empty().append("Gewählte Flasche");
             $(".btn-primary").empty().append("Trinken");
             $(".modal-body").empty();
+            $(".modal-content").attr("data-fTaken",1);
 
-            let shelf = parseInt($(this).attr("id").substr(2));
-            console.log("shelf " + shelf);
             $.ajax({
                 url: "../php/Weinkeller.php",
                 data: {
@@ -59,6 +60,7 @@ $(document).ready(function () {
             $(".modal-title").empty().append("Platzierbare Flaschen");
             $(".btn-primary").empty().append("Platzieren");
             $(".modal-body").empty();
+            $(".modal-content").attr("data-fTaken",0);
 
             $.ajax({
                 url: "../php/Weinkeller.php",
@@ -88,19 +90,24 @@ $(document).ready(function () {
                     });
                 },
                 error: function (data) {
-
+                    console.log("AJAX call failed");
                 }
-
             });
-
-
-
-
         }
         $('#put-form-modal').modal();
     });
 
     $(".btn-primary").on("click", function (e) {
-       console.log("Drink!");
+        let shelf = $(".modal-content").attr('data-fID');
+        console.log("Shelf: " + shelf);
+        if($(".modal-content").attr('data-fTaken') == 1) {
+            console.log("Drink!");
+            
+
+        } else {
+            console.log("Place!");
+
+
+        }
     });
 });
