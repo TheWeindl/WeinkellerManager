@@ -91,7 +91,14 @@ $(document).ready(function () {
                     q: "drinkBottle",
                     shelf: shelf
                 },
-                type: "POST"
+                type: "POST",
+                success: function () {
+                    //drawRack();     //Takes forever ...
+
+                    //Faster solution -> change only one shelf
+                    $(".place#f-" + shelf + " i").removeClass("fas red white").addClass("far");
+                    $(".place#f-" + shelf + "").removeClass("taken");
+                }
             });
 
         } else {
@@ -112,7 +119,7 @@ function drawRack(){
             console.log(json);
             $.each(json, function (key, value) {
                 if (value.flasche != 0) {
-                    console.log("found one");
+                    //console.log("found one");
                     $(".place#f-" + (key + 1) + " i").removeClass("far").addClass("fas");
                     $(".place#f-" + (key + 1) + "").addClass("taken");
                     if (value.type === "Rotwein") {
@@ -120,7 +127,11 @@ function drawRack(){
                     } else if (value.type === "Weißwein") {
                         $(".place#f-" + (key + 1) + " i").addClass("white");
                     }
-                    console.log($(".place#f-" + (key + 1) + ""));
+                    //console.log($(".place#f-" + (key + 1) + ""));
+                }
+                else if(value.flasche == 0){
+                    $(".place#f-" + (key + 1) + " i").removeClass("fas red white").addClass("far");
+                    $(".place#f-" + (key + 1) + "").removeClass("taken");
                 }
             });
         },
