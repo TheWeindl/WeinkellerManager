@@ -60,13 +60,17 @@ $(document).ready(function () {
                     });
 
                     let empty = true;
+                    let $list = $('<ul class="list-group"></ul>');
                     $.each(freeBottles, function(bottleID, num)
                     {
                        if(num > 0 && bottleID != 0){
                            $(".modal-body").append("x" + num + " " + items["flaschen"][bottleID - 1].name + "<br>");
+                           $list.append("<li class='list-group-item d-flex justify-content-between align-items-center'>"+items['flaschen'][bottleID - 1].name +"<span class=\"badge badge-primary badge-pill\">"+num+"</span></li>");
                            empty = false;
                        }
+
                     });
+                    $(".modal-body").append($list);
                     if(empty){
                         $(".modal-body").append("Keine Flaschen verfügbar.<br> Alle Flaschen sind bereits im Regal platziert.");
                     }
