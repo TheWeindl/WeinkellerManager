@@ -97,6 +97,16 @@ if($_POST["q"] == "placeBottle") {
         //Update rack
         $query = "UPDATE Regal SET flasche=$bottleID WHERE ID = $shelf";    //Add bottle to rack
         $result = mysqli_query($connection, $query);
+
+        //Return placed bootle info
+        $query = "SELECT * FROM Flaschen WHERE Flaschen.id=(SELECT Regal.flasche FROM Regal WHERE Regal.ID=$shelf)";
+        $result = mysqli_query($connection, $query);
+
+        $flaschen = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            array_push($flaschen, $row);
+        }
+        echo json_encode($flaschen);
     }
     mysqli_close($connection);die();
 }

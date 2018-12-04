@@ -92,7 +92,7 @@ $(document).ready(function () {
     });
 });
 
-$(".btn-primary").on("click", function (e) {
+$(document).on("click", ".btn-primary" ,function (e) {
     let shelf = $(".modal-content").attr('data-fID');
     console.log("Shelf: " + shelf);
     console.log("Drink!");
@@ -110,7 +110,7 @@ $(".btn-primary").on("click", function (e) {
     });
 });
 
-$(".placeBottle").on("click", function (e) {
+$(document).on("click",".placeBottle", function (e) {
     let shelf = $(".modal-content").attr('data-fID');
     let bottleID = $(this).data("id");
     console.log("Shelf: " + shelf);
@@ -122,10 +122,20 @@ $(".placeBottle").on("click", function (e) {
             bottle: bottleID
         },
         type: "POST",
-        success: function () {
+        success: function (data) {
+            let items = JSON.parse(data);
+            let color;
             console.log("Place clicked");
 
-            $(".place#f-" + shelf + " i").removeClass("far").addClass("fas");
+            if(items.length){
+                if(items[0].type == "Rotwein") {
+                    color = "red";
+                }
+                else if(items[0].type == "Weißwein") {
+                    color = "white";
+                }
+            }
+            $(".place#f-" + shelf + " i").removeClass("far").addClass("fas " + color);
             $(".place#f-" + shelf + "").addClass("taken");
         },
         error: function () {
