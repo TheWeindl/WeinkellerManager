@@ -64,8 +64,8 @@ $(document).ready(function () {
                     $.each(freeBottles, function(bottleID, num)
                     {
                        if(num > 0 && bottleID != 0){
-                           $(".modal-body").append("x" + num + " " + items["flaschen"][bottleID - 1].name + "<br>");
-                           $list.append("<li class='list-group-item d-flex justify-content-between align-items-center'>"+items['flaschen'][bottleID - 1].name +"<span class=\"badge badge-primary badge-pill\">"+num+"</span></li>");
+                           //$(".modal-body").append("x" + num + " " + items["flaschen"][bottleID - 1].name + "<br>");
+                           $list.append("<li class='list-group-item d-flex justify-content-between align-items-center'><p>"+items['flaschen'][bottleID - 1].name +"<span class=\"badge badge-primary badge-pill\">"+num+"</span></p><button class='placeBottle' data-id='" + (bottleID - 1) + "'>Platzieren</button></li>");
                            empty = false;
                        }
 
@@ -83,35 +83,54 @@ $(document).ready(function () {
         }
         $('#put-form-modal').modal();
     });
+});
 
-    $(".btn-primary").on("click", function (e) {
-        let shelf = $(".modal-content").attr('data-fID');
-        console.log("Shelf: " + shelf);
-        if($(".modal-content").attr('data-fTaken') == 1) {
-            console.log("Drink!");
-            $.ajax({
-                url: "../php/Weinkeller.php",
-                data: {
-                    q: "drinkBottle",
-                    shelf: shelf
-                },
-                type: "POST",
-                success: function () {
-                    //drawRack();     //Takes forever ...
+$(".btn-primary").on("click", function (e) {
+    let shelf = $(".modal-content").attr('data-fID');
+    console.log("Shelf: " + shelf);
+    //if($(".modal-content").attr('data-fTaken') == 1) {
+    console.log("Drink!");
+    $.ajax({
+        url: "../php/Weinkeller.php",
+        data: {
+            q: "drinkBottle",
+            shelf: shelf
+        },
+        type: "POST",
+        success: function () {
+            //drawRack();     //Takes forever ...
 
-                    //Faster solution -> change only one shelf
-                    $(".place#f-" + shelf + " i").removeClass("fas red white").addClass("far");
-                    $(".place#f-" + shelf + "").removeClass("taken");
-                }
-            });
-
-        } else {
-            console.log("Place!");
-
-
+            //Faster solution -> change only one shelf
+            $(".place#f-" + shelf + " i").removeClass("fas red white").addClass("far");
+            $(".place#f-" + shelf + "").removeClass("taken");
         }
     });
+    //}
 });
+
+$(".placeBottle").on("click", function (e) {
+    let shelf = $(".modal-content").attr('data-fID');
+    let bottleID = $(this).data("id");
+    console.log("Shelf: " + shelf);
+    $.ajax({
+        url: "../php/Weinkeller.php",
+        data: {
+            q: "placeBottle",
+            shelf: shelf,
+            bottle: bottleID
+        },
+        type: "POST",
+        success: function () {
+            //drawRack();     //Takes forever ...
+
+            //Faster solution -> change only one shelf
+            $(".place#f-" + shelf + " i").removeClass("fas red white").addClass("far");
+            $(".place#f-" + shelf + "").removeClass("taken");
+        }
+    });
+    //}
+});
+
 
 function drawRack(){
     $.ajax({
@@ -120,7 +139,7 @@ function drawRack(){
         data: {function: "outputRegal"},
         success: function (data) {
             let json = JSON.parse(data);
-            console.log(json);
+            //console.log(json);
             $.each(json, function (key, value) {
                 if (value.flasche != 0) {
                     //console.log("found one");
