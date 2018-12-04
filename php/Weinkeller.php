@@ -29,7 +29,6 @@ if ($_POST["function"] == "outputRegal")
     mysqli_close($connection);die();
 }
 
-
 if($_GET["q"] == "fandr") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
@@ -53,6 +52,24 @@ if($_GET["q"] == "fandr") {
     mysqli_close($connection);die();
 }
 
+if($_GET["q"] == "bottleInfo") {
+    $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
+    if (mysqli_connect_errno($connection)) {
+        echo "Failed to connect to DataBase: " . mysqli_connect_error();
+    } else {
+        $shelf = $_GET["shelf"];
+        $query = "SELECT * FROM Flaschen WHERE Flaschen.id=(SELECT Regal.flasche FROM Regal WHERE Regal.ID=$shelf)";
+        $result = mysqli_query($connection, $query);
+
+        $flaschen = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            array_push($flaschen, $row);
+        }
+        echo json_encode($flaschen);
+    }
+    mysqli_close($connection);die();
+}
+
 if($_POST["q"] == "drinkBottle") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
@@ -69,20 +86,17 @@ if($_POST["q"] == "drinkBottle") {
     mysqli_close($connection);die();
 }
 
-if($_GET["q"] == "bottleInfo") {
+if($_POST["q"] == "placeBottle") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
     } else {
-        $id = $_GET["id"];
-        $query = "SELECT * FROM Flaschen WHERE id=$id";
-        $result = mysqli_query($connection, $query);
+        $shelf = $_POST["shelf"];
+        $bottleID = $_POST["bottle"];
 
-        $flaschen = array();
-        while ($row = mysqli_fetch_assoc($result)) {
-            array_push($flaschen, $row);
-        }
-        echo json_encode($flaschen);
+        //Update rack
+        $query = "UPDATE Regal SET flasche=$bottleID WHERE ID = $shelf";    //Add bottle to rack
+        $result = mysqli_query($connection, $query);
     }
     mysqli_close($connection);die();
 }
