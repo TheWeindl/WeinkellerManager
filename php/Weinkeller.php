@@ -74,8 +74,32 @@ if($_GET["q"] == "bottleInfo") {
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
     } else {
-        $id = $_GET["id"];
-        $query = "SELECT * FROM Flaschen WHERE id=$id";
+        $shelf = $_GET["shelf"];
+        $query = "SELECT * FROM Flaschen WHERE Flaschen.id=(SELECT Regal.flasche FROM Regal WHERE Regal.ID=$shelf)";
+        $result = mysqli_query($connection, $query);
+        $flaschen = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            array_push($flaschen, $row);
+        }
+        echo json_encode($flaschen);
+    }
+    mysqli_close($connection);die();
+}
+
+if($_POST["q"] == "placeBottle") {
+    $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
+    if (mysqli_connect_errno($connection)) {
+        echo "Failed to connect to DataBase: " . mysqli_connect_error();
+    } else {
+        $shelf = $_POST["shelf"];
+        $bottleID = $_POST["bottle"];
+
+        //Update rack
+        $query = "UPDATE Regal SET flasche=$bottleID WHERE ID = $shelf";    //Add bottle to rack
+        $result = mysqli_query($connection, $query);
+
+        //Return placed bootle info
+        $query = "SELECT * FROM Flaschen WHERE Flaschen.id=(SELECT Regal.flasche FROM Regal WHERE Regal.ID=$shelf)";
         $result = mysqli_query($connection, $query);
 
         $flaschen = array();

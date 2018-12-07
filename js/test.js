@@ -6,6 +6,11 @@ $(document).ready(function () {
         let shelf = parseInt($(this).attr("id").substr(2));
         $(".modal-content").attr("data-fID",shelf);
 
+        let buttonHere = $(".modal-footer").find("#selectBtn");
+        if(!buttonHere.length) {
+            $(".modal-footer").append("<button type=\"button\" class=\"btn btn-primary\" id=\"selectBtn\" data-dismiss=\"modal\">test</button>");
+        }
+
         if($(this).hasClass("taken")) {
             $(".modal-title").empty().append("Gewählte Flasche");
             $(".btn-primary").empty().append("Trinken");
@@ -16,20 +21,20 @@ $(document).ready(function () {
                 url: "../php/Weinkeller.php",
                 data: {
                     q: "bottleInfo",
-                    id: shelf
+                    shelf: shelf
                 },
                 type: "GET",
                 success: function (data) {
                     let bottles = JSON.parse(data);
-                    console.log(bottles);
-
-                    $(".modal-title").empty().append(bottles[0]["name"]);
-                    $(".modal-body").append("Typ     : " + bottles[0]["type"] + "<br>");
-                    $(".modal-body").append("Jahrgang: " + bottles[0]["jahr"] + "<br>");
-                    $(".modal-body").append("Land    : " + bottles[0]["land"] + "<br>");
-                    $(".modal-body").append("Region  : " + bottles[0]["region"] + "<br>");
-                    $(".modal-body").append("Weingut : " + bottles[0]["weingut"] + "<br>");
-                    $(".modal-body").append("Stück   : " + bottles[0]["anzahl"] + "<br>");
+                    if(bottles != 0) {
+                        $(".modal-title").empty().append(bottles[0]["name"]);
+                        $(".modal-body").append("Typ     : " + bottles[0]["type"] + "<br>");
+                        $(".modal-body").append("Jahrgang: " + bottles[0]["jahr"] + "<br>");
+                        $(".modal-body").append("Land    : " + bottles[0]["land"] + "<br>");
+                        $(".modal-body").append("Region  : " + bottles[0]["region"] + "<br>");
+                        $(".modal-body").append("Weingut : " + bottles[0]["weingut"] + "<br>");
+                        $(".modal-body").append("Stück   : " + bottles[0]["anzahl"] + "<br>");
+                    }
                 }
             });
 
@@ -37,6 +42,7 @@ $(document).ready(function () {
             $(".modal-title").empty().append("Platzierbare Flaschen");
             $(".btn-primary").empty().append("Platzieren");
             $(".modal-body").empty();
+            $("#selectBtn").remove();
             $(".modal-content").attr("data-fTaken",0);
 
             $.ajax({
@@ -64,8 +70,7 @@ $(document).ready(function () {
                     $.each(freeBottles, function(bottleID, num)
                     {
                        if(num > 0 && bottleID != 0){
-                           //$(".modal-body").append("x" + num + " " + items["flaschen"][bottleID - 1].name + "<br>");
-                           $list.append("<li class='list-group-item d-flex justify-content-between align-items-center'><p>"+items['flaschen'][bottleID - 1].name +"<span class=\"badge badge-primary badge-pill\">"+num+"</span></p><button class='placeBottle' data-id='" + (bottleID - 1) + "'>Platzieren</button></li>");
+                           $list.append("<li class='list-group-item d-flex justify-content-between align-items-center'><p>"+items['flaschen'][bottleID - 1].name +"<span class=\"badge badge-primary badge-pill\">"+num+"</span></p><button class='placeBottle' data-id='" + (bottleID) + "' data-dismiss='modal'>Platzieren</button></li>");
                            empty = false;
                        }
 
@@ -85,10 +90,9 @@ $(document).ready(function () {
     });
 });
 
-$(".btn-primary").on("click", function (e) {
+$(document).on("click", ".btn-primary" ,function (e) {
     let shelf = $(".modal-content").attr('data-fID');
     console.log("Shelf: " + shelf);
-    //if($(".modal-content").attr('data-fTaken') == 1) {
     console.log("Drink!");
     $.ajax({
         url: "../php/Weinkeller.php",
@@ -98,17 +102,13 @@ $(".btn-primary").on("click", function (e) {
         },
         type: "POST",
         success: function () {
-            //drawRack();     //Takes forever ...
-
-            //Faster solution -> change only one shelf
             $(".place#f-" + shelf + " i").removeClass("fas red white").addClass("far");
             $(".place#f-" + shelf + "").removeClass("taken");
         }
     });
-    //}
 });
 
-$(".placeBottle").on("click", function (e) {
+$(document).on("click",".placeBottle", function (e) {
     let shelf = $(".modal-content").attr('data-fID');
     let bottleID = $(this).data("id");
     console.log("Shelf: " + shelf);
@@ -120,15 +120,25 @@ $(".placeBottle").on("click", function (e) {
             bottle: bottleID
         },
         type: "POST",
-        success: function () {
-            //drawRack();     //Takes forever ...
-
-            //Faster solution -> change only one shelf
-            $(".place#f-" + shelf + " i").removeClass("fas red white").addClass("far");
-            $(".place#f-" + shelf + "").removeClass("taken");
+        success: function (data) {
+            let items = JSON.parse(data);
+            let color;
+            console.log("Place clicked");
+            if(items.length){
+                if(items[0].type == "Rotwein") {
+                    color = "red";
+                }
+                else if(items[0].type == "Weißwein") {
+                    color = "white";
+                }
+            }
+            $(".place#f-" + shelf + " i").removeClass("far").addClass("fas " + color);
+            $(".place#f-" + shelf + "").addClass("taken");
+        },
+        error: function () {
+            console.log("Placing the bottle failed!");
         }
     });
-    //}
 });
 
 
