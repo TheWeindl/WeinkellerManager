@@ -4,7 +4,6 @@ $(document).ready(function () {
 
     $(".place").on("click", function (e) {
         let shelf = parseInt($(this).attr("id").substr(2));
-        console.log("Clicked shelf: " + shelf);
         $(".modal-content").attr("data-fID",shelf);
 
         let buttonHere = $(".modal-footer").find("#selectBtn");
@@ -27,8 +26,6 @@ $(document).ready(function () {
                 type: "GET",
                 success: function (data) {
                     let bottles = JSON.parse(data);
-                    //console.log(bottles);
-
                     if(bottles != 0) {
                         $(".modal-title").empty().append(bottles[0]["name"]);
                         $(".modal-body").append("Typ     : " + bottles[0]["type"] + "<br>");
@@ -82,6 +79,7 @@ $(document).ready(function () {
                     if(empty){
                         $(".modal-body").append("Keine Flaschen verfügbar.<br> Alle Flaschen sind bereits im Regal platziert.");
                     }
+
                 },
                 error: function (data) {
                     console.log("AJAX call failed");
@@ -126,7 +124,6 @@ $(document).on("click",".placeBottle", function (e) {
             let items = JSON.parse(data);
             let color;
             console.log("Place clicked");
-
             if(items.length){
                 if(items[0].type == "Rotwein") {
                     color = "red";
