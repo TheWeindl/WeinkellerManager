@@ -60,7 +60,7 @@ if($_POST["q"] == "drinkBottle") {
     } else {
         $shelf = $_POST["shelf"];
 
-        $query1 = "UPDATE Flaschen SET anzahl = anzahl-1  WHERE ID = (SELECT Regal.flasche FROM Regal WHERE Regal.ID=$shelf)";     //Decerement bottle stock
+        $query1 = "UPDATE Flaschen SET anzahl=anzahl-1, getrunken=getrunken+1  WHERE ID = (SELECT Regal.flasche FROM Regal WHERE Regal.ID=$shelf)";     //Decerement bottle stock
         $query2 = "UPDATE Regal SET flasche=0 WHERE ID = $shelf";                //Remove bottle from rack
 
         $result1 = mysqli_query($connection, $query1);
