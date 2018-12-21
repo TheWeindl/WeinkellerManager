@@ -35,12 +35,15 @@ $(document).ready(function () {
                     let bottles = JSON.parse(data);
                     if(bottles != 0) {
                         $(".modal-title").empty().append(bottles[0]["name"]);
-                        $(".modal-body").append("Typ     : " + bottles[0]["type"] + "<br>");
-                        $(".modal-body").append("Jahrgang: " + bottles[0]["jahr"] + "<br>");
-                        $(".modal-body").append("Land    : " + bottles[0]["land"] + "<br>");
-                        $(".modal-body").append("Region  : " + bottles[0]["region"] + "<br>");
-                        $(".modal-body").append("Weingut : " + bottles[0]["weingut"] + "<br>");
-                        $(".modal-body").append("Stück   : " + bottles[0]["anzahl"] + "<br>");
+
+                        $type = "Typ     : ";
+
+                        $(".modal-body").append("<div class=\"col-md-4\">" + $type + bottles[0]["type"] + "</div>");
+                        $(".modal-body").append("<div class=\"col-md-4\">Jahrgang: " + bottles[0]["jahr"] + "</div>");
+                        $(".modal-body").append("<div class=\"col-md-4\">Land    : " + bottles[0]["land"] + "</div>");
+                        $(".modal-body").append("<div class=\"col-md-4\">Region  : " + bottles[0]["region"] + "</div>");
+                        $(".modal-body").append("<div class=\"col-md-4\">Weingut : " + bottles[0]["weingut"] + "</div>");
+                        $(".modal-body").append("<div class=\"col-md-4\">Stück   : " + bottles[0]["anzahl"] + "</div>");
                     }
                 }
             });
