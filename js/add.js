@@ -7,7 +7,7 @@ $(document).ready(function () {
     $('#select-type').selectize({
         placeholder: "Test",
         sortField: "text",
-        create: true,
+        create: false,
         maxItems: 1,
         options: [  {value: "redWine", text: "Rotwein"},
                     {value: "whiteWine", text: "Weißwein"}]
@@ -30,8 +30,7 @@ $(document).on("click", ".addBtn" ,function (e) {
         },
         type: "POST",
         success: function () {
-            $(".place#f-" + shelf + " i").removeClass("fas red white").addClass("far");
-            $(".place#f-" + shelf + "").removeClass("taken");
+            console.log("Bottle added to database");
         }
     });
 });

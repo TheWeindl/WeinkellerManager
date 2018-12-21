@@ -6,16 +6,23 @@ $(document).ready(function () {
         let shelf = parseInt($(this).attr("id").substr(2));
         $(".modal-content").attr("data-fID",shelf);
 
-        let buttonHere = $(".modal-footer").find("#selectBtn");
-        if(!buttonHere.length) {
-            $(".modal-footer").append("<button type=\"button\" class=\"btn btn-primary\" id=\"selectBtn\" data-dismiss=\"modal\">test</button>");
-        }
-
         if($(this).hasClass("taken")) {
+
+            let removeBtnHere = $(".modal-footer").find("#removeBtn");
+            if(!removeBtnHere.length) {
+                $(".modal-footer").append("<button type=\"button\" class=\"btn btn-secondary\" id=\"removeBtn\" data-dismiss=\"modal\">test</button>");
+            }
+
+            let buttonHere = $(".modal-footer").find("#selectBtn");
+            if(!buttonHere.length) {
+                $(".modal-footer").append("<button type=\"button\" class=\"btn btn-primary\" id=\"selectBtn\" data-dismiss=\"modal\">test</button>");
+            }
+
             $(".modal-title").empty().append("Gewählte Flasche");
             $(".btn-primary").empty().append("Trinken");
             $(".modal-body").empty();
             $(".modal-content").attr("data-fTaken",1);
+            $("#removeBtn").empty().append("Entfernen");
 
             $.ajax({
                 url: "../php/Weinkeller.php",
@@ -43,6 +50,7 @@ $(document).ready(function () {
             $(".btn-primary").empty().append("Platzieren");
             $(".modal-body").empty();
             $("#selectBtn").remove();
+            $("#removeBtn").empty().remove();
             $(".modal-content").attr("data-fTaken",0);
 
             $.ajax({
@@ -53,6 +61,7 @@ $(document).ready(function () {
                 type: "GET",
                 success: function (data) {
                     let items = JSON.parse(data);
+                    console.log(items);
 
                     //Calculate unplaced bottles
                     let freeBottles = new Array();
@@ -98,6 +107,24 @@ $(document).on("click", ".btn-primary" ,function (e) {
         url: "../php/Weinkeller.php",
         data: {
             q: "drinkBottle",
+            shelf: shelf
+        },
+        type: "POST",
+        success: function () {
+            $(".place#f-" + shelf + " i").removeClass("fas red white").addClass("far");
+            $(".place#f-" + shelf + "").removeClass("taken");
+        }
+    });
+});
+
+$(document).on("click", "#removeBtn" ,function (e) {
+    let shelf = $(".modal-content").attr('data-fID');
+    console.log("Shelf: " + shelf);
+    console.log("Remove");
+    $.ajax({
+        url: "../php/Weinkeller.php",
+        data: {
+            q: "removeBottle",
             shelf: shelf
         },
         type: "POST",
