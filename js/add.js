@@ -4,17 +4,10 @@
 
 $(document).ready(function () {
 
-    $('#select-type').selectize({
-        placeholder: "Test",
-        sortField: "text",
-        create: false,
-        maxItems: 1,
-        options: [  {value: "redWine", text: "Rotwein"},
-                    {value: "whiteWine", text: "Weißwein"}]
-    });
-});
+})
+;
 
-$(document).on("click", ".addBtn" ,function (e) {
+$(document).on("click", ".addBtn", function (e) {
 
     $.ajax({
         url: "../php/Weinkeller.php",

@@ -11,8 +11,8 @@ define(USER, pi);
 define(PASSWORD, 'Florianw1!');
 define(DATABASE, Weinkeller);
 
-if ($_POST["function"] == "outputRegal")
-{
+
+if ($_POST["function"] == "outputRegal") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
@@ -26,11 +26,12 @@ if ($_POST["function"] == "outputRegal")
         }
         echo json_encode($temp);
     }
-    mysqli_close($connection);die();
+    mysqli_close($connection);
+    die();
 }
 
 
-if($_GET["q"] == "fandr") {
+if ($_GET["q"] == "fandr") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
@@ -50,10 +51,11 @@ if($_GET["q"] == "fandr") {
         }
         echo json_encode(["flaschen" => $flaschen, "regal" => $regal]);
     }
-    mysqli_close($connection);die();
+    mysqli_close($connection);
+    die();
 }
 
-if($_POST["q"] == "drinkBottle") {
+if ($_POST["q"] == "drinkBottle") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
@@ -66,10 +68,11 @@ if($_POST["q"] == "drinkBottle") {
         $result1 = mysqli_query($connection, $query1);
         $result2 = mysqli_query($connection, $query2);
     }
-    mysqli_close($connection);die();
+    mysqli_close($connection);
+    die();
 }
 
-if($_POST["q"] == "removeBottle") {
+if ($_POST["q"] == "removeBottle") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
@@ -79,10 +82,11 @@ if($_POST["q"] == "removeBottle") {
 
         $result = mysqli_query($connection, $query);
     }
-    mysqli_close($connection);die();
+    mysqli_close($connection);
+    die();
 }
 
-if($_GET["q"] == "bottleInfo") {
+if ($_GET["q"] == "bottleInfo") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
@@ -96,10 +100,11 @@ if($_GET["q"] == "bottleInfo") {
         }
         echo json_encode($flaschen);
     }
-    mysqli_close($connection);die();
+    mysqli_close($connection);
+    die();
 }
 
-if($_POST["q"] == "placeBottle") {
+if ($_POST["q"] == "placeBottle") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
@@ -121,10 +126,11 @@ if($_POST["q"] == "placeBottle") {
         }
         echo json_encode($flaschen);
     }
-    mysqli_close($connection);die();
+    mysqli_close($connection);
+    die();
 }
 
-if($_POST["q"] == "addBottle") {
+if ($_POST["q"] == "addBottle") {
     $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
     if (mysqli_connect_errno($connection)) {
         echo "Failed to connect to DataBase: " . mysqli_connect_error();
@@ -141,5 +147,107 @@ if($_POST["q"] == "addBottle") {
         $query = "INSERT INTO Flaschen(name, type, jahr, land, region, weingut, anzahl, getrunken) VALUES ($name, $type, $year, $country, $region, $winery, $amount , 0)";
         $result = mysqli_query($connection, $query);
     }
-    mysqli_close($connection);die();
+    mysqli_close($connection);
+    die();
+}
+
+if ($_GET["q"] == "search") {
+    $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
+    if (mysqli_connect_errno($connection)) {
+        echo "Failed to connect to DataBase: " . mysqli_connect_error();
+    } else {
+        header("Content-Type: application/json");
+
+        $query = "SELECT * FROM Flaschen;";
+        $result = mysqli_query($connection, $query);
+
+        $flaschen = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            array_push($flaschen, $row);
+        }
+        echo json_encode($flaschen);
+
+        mysqli_close($connection);
+        die();
+
+        //1. aufspliten bei ;
+        $tags = explode(";", $_GET["query"]);
+        if (!is_array($tags) || empty($tags)) {
+            return false;
+            mysqli_close($connection);
+            die();
+        }
+
+        //2. entfernen von html speacial char
+        foreach ($tags as $key => $value) {
+            $tags[$key] = trim(strip_tags(htmlspecialchars($value)));
+        }
+
+        //3. type prüfen (weinsorte)
+        $type = false;
+        foreach ($tags as $key => $value) {
+            if (strpos($value, "Weißwein") !== false) {
+                $type = "Weißwein";
+                unset($tags[$key]);
+            } elseif (strpos($value, "Rotwein") !== false) {
+                $type = "Rotwein";
+                unset($tags[$key]);
+            }
+        }
+
+        //4. numerischer wert
+        $year = false;
+        foreach ($tags as $key => $value) {
+            if (is_numeric($value)) {
+                $year = $value;
+                unset($tags[$key]);
+            }
+        }
+
+        //5.
+        $whereType = "";
+        $whereYear = "";
+        $searchable = ["name", "land", "region", "weingut"];
+        $finalResults = array();
+        if ($type) {
+            $whereType = "type='" . $type . "'";
+        }
+        if ($year) {
+            $whereYear = "jahr='" . $year . "'";
+        }
+
+        foreach ($tags as $key => $value) {
+            foreach ($searchable as $k => $v) {
+                $query1 = "SELECT * FROM `Flaschen` WHERE ";
+                if ($type && $year) {
+                    $result1 = mysqli_query($connection, $query1 . $v . " LIKE '%" . $value . "%' AND " . $whereType . " AND " . $whereYear);
+                    $result2 = mysqli_query($connection, $query1 . $v . " LIKE '%" . $value . "%' AND " . $whereType . " OR " . $whereYear);
+                } elseif ($type && !$year) {
+                    $result1 = mysqli_query($connection, $query1 . $v . " LIKE '%" . $value . "%' AND " . $whereType);
+                    $result2 = mysqli_query($connection, $query1 . $v . " LIKE '%" . $value . "%' AND " . $whereType);
+                } elseif ($year && !$type) {
+                    $result1 = mysqli_query($connection, $query1 . $v . " LIKE '%" . $value . "%' AND " . $whereYear);
+                    $result2 = mysqli_query($connection, $query1 . $v . " LIKE '%" . $value . "%' AND " . $whereYear);
+                } else {
+                    $result1 = mysqli_query($connection, $query1 . $v . " LIKE '%" . $value . "%'");
+                    $result2 = mysqli_query($connection, $query1 . $v . " LIKE '%" . $value . "%'");
+                }
+
+                while ($row = mysqli_fetch_assoc($result1)) {
+                    if (!$finalResults[$row["ID"]]) {
+                        $finalResults[$row["ID"]] = $row;
+                    }
+                }
+
+                while ($row = mysqli_fetch_assoc($result2)) {
+                    if (!$finalResults[$row["ID"]]) {
+                        $finalResults[$row["ID"]] = $row;
+                    }
+                }
+            }
+        }
+        echo json_encode(["success" => true, "data" => $finalResults]);
+    }
+    mysqli_close($connection);
+    die();
 }

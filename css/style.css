@@ -3,10 +3,10 @@
 }
 
 .place i {
-  font-size: calc(3vw + 3vh);
+    font-size: calc(3vw + 3vh);
 }
 
-.row{
+.row {
     display: flex;
     justify-content: flex-start;
     flex-direction: row;
@@ -22,4 +22,18 @@
 
 .black {
     color: black;
+}
+
+
+.badge-custom-Rotwein {
+    background-color: #a00008;
+    color: white;
+}
+
+.badge-custom-Weißwein {
+    background-color: #fff28d;
+}
+
+.bg-custom {
+    background-color: #a00008 !important;
 }

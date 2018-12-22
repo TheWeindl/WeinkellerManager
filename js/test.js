@@ -82,7 +82,7 @@ $(document).ready(function () {
                     $.each(freeBottles, function(bottleID, num)
                     {
                        if(num > 0 && bottleID != 0){
-                           $list.append("<li class='list-group-item d-flex justify-content-between align-items-center'><p>"+items['flaschen'][bottleID - 1].name +"<span class=\"badge badge-primary badge-pill\">"+num+"</span></p><button class='placeBottle' data-id='" + (bottleID) + "' data-dismiss='modal'>Platzieren</button></li>");
+                           $list.append("<li class='list-group-item d-flex justify-content-between align-items-center'><p>"+items['flaschen'][bottleID - 1].name +" <span class=\"badge badge-custom-"+items['flaschen'][bottleID - 1].type+" badge-pill\">"+num+"x</span></p><button class='placeBottle btn btn-outline-success' data-id='" + (bottleID) + "' data-dismiss='modal'>Platzieren</button></li>");
                            empty = false;
                        }
 
