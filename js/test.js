@@ -45,15 +45,6 @@ $(document).ready(function() {
                           <tr> <td><span>Weingut</span></td>  <td><span>${bottles[0]["weingut"]}</span></td>  </tr>
                           <tr> <td><span>Stück</span></td>    <td><span>${bottles[0]["anzahl"]}</span></td>   </tr>
                           </tbody></table>`);
-
-            /*
-            $(".modal-body").append("<div class=\"col-md-12\"><p>" + $type + bottles[0]["type"] + "</p></div>");
-            $(".modal-body").append("<div class=\"col-md-12\"><p>Jahrgang: " + bottles[0]["jahr"] + "</p></div>");
-            $(".modal-body").append("<div class=\"col-md-12\"><p>Land    : " + bottles[0]["land"] + "</p></div>");
-            $(".modal-body").append("<div class=\"col-md-12\"><p>Region  : " + bottles[0]["region"] + "</p></div>");
-            $(".modal-body").append("<div class=\"col-md-12\"><p>Weingut : " + bottles[0]["weingut"] + "</p></div>");
-            $(".modal-body").append("<div class=\"col-md-12\"><p>Stück   : " + bottles[0]["anzahl"] + "</p></div>");
-            */
           }
         }
       });
@@ -123,7 +114,7 @@ $(document).on("click", ".btn-primary", function(e) {
     },
     type: "POST",
     success: function() {
-      $(".place#f-" + shelf + " i:first-child").removeClass("fas red white").addClass("far");
+      $(".place#f-" + shelf + " i:first-child").removeClass("fas red white rose sekt").addClass("far");
       $(".place#f-" + shelf + "").removeClass("taken");
     }
   });
@@ -141,7 +132,7 @@ $(document).on("click", "#removeBtn", function(e) {
     },
     type: "POST",
     success: function() {
-      $(".place#f-" + shelf + " i:first-child").removeClass("fas red white").addClass("far");
+      $(".place#f-" + shelf + " i:first-child").removeClass("fas red white rose sekt").addClass("far");
       $(".place#f-" + shelf + "").removeClass("taken");
     }
   });
@@ -168,6 +159,10 @@ $(document).on("click", ".placeBottle", function(e) {
           color = "red";
         } else if (items[0].type == "Weißwein") {
           color = "white";
+        } else if (items[0].type == "Rose") {
+          color = "rose";
+        } else if (items[0].type == "Sekt") {
+          color = "sekt";
         }
       }
       $(".place#f-" + shelf + " i:first-child").removeClass("far").addClass("fas " + color);
@@ -199,15 +194,19 @@ function drawRack() {
             $(".place#f-" + (key + 1) + " i:first-child").addClass("red");
           } else if (value.type === "Weißwein") {
             $(".place#f-" + (key + 1) + " i:first-child").addClass("white");
+          } else if (value.type === "Rose") {
+            $(".place#f-" + (key + 1) + " i:first-child").addClass("rose");
+          } else if (value.type === "Sekt") {
+            $(".place#f-" + (key + 1) + " i:first-child").addClass("sekt");
           }
-          if(findGetParameter("id")) {
-            if(value.id != findGetParameter("id")) {
+          if (findGetParameter("id")) {
+            if (value.id != findGetParameter("id")) {
               $(".place#f-" + (key + 1) + " i:first-child").addClass('op-2');
             }
           }
           //console.log($(".place#f-" + (key + 1) + ""));
         } else if (value.flasche == 0) {
-          $(".place#f-" + (key + 1) + " i:first-child").removeClass("fas red white").addClass("far");
+          $(".place#f-" + (key + 1) + " i:first-child").removeClass("fas red white rose sekt").addClass("far");
           $(".place#f-" + (key + 1) + "").removeClass("taken");
         }
       });

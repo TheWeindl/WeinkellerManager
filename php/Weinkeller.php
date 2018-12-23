@@ -152,6 +152,23 @@ if(isset($_POST['q']) || isset($_GET['q'])) {
         die();
     }
 
+    if ($_GET["q"] == "addOneBottle") {
+        $connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
+        if (mysqli_connect_errno($connection)) {
+            echo "Failed to connect to DataBase: " . mysqli_connect_error();
+        } else {
+            $bottleID = $_GET["bottle"];
+
+            //Increment stock
+            $query = "UPDATE Flaschen SET anzahl=anzahl+1 WHERE id=$bottleID";    //Add bottle to rack
+            $result = mysqli_query($connection, $query);
+
+            echo $query;
+        }
+        mysqli_close($connection);
+        die();
+    }
+
     if ($_GET["q"] == "addBottle") {
         error_reporting(E_ALL | E_STRICT);
         ini_set('display_errors', 'On');
@@ -218,6 +235,12 @@ echo "Error: " . $query . "<br>" . mysqli_error($connection);
                     $type = "Weißwein";
                     unset($tags[$key]);
                 } elseif (strpos($value, "Rotwein") !== false) {
+                    $type = "Rotwein";
+                    unset($tags[$key]);
+                } elseif (strpos($value, "Sekt") !== false) {
+                    $type = "Rotwein";
+                    unset($tags[$key]);
+                } elseif (strpos($value, "Rose") !== false) {
                     $type = "Rotwein";
                     unset($tags[$key]);
                 }

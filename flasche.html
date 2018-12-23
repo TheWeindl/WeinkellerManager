@@ -48,7 +48,7 @@
           <li class="list-group-item">Verköstigt <span class="pull-right badge badge-custom-Rotwein float-right" id='flaschen_drunk'>1</span></li>
           <li class="list-group-item">
             <button type="button" id="showInRegal" class='btn btn-lg btn-outline-secondary' name="button">Platzierungen anzeigen</button>
-            <button type="button" id="count+1" class='btn btn-lg btn-outline-secondary float-right' name="button">+1</button></li>
+            <button type="button" id="addOneBottle" class='btn btn-lg btn-outline-secondary float-right' name="button">+1</button></li>
         </ul>
       </div>
       <div class="col-md-1">
@@ -64,10 +64,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script type="text/javascript">
-    $(document).on("click", "#showInRegal", function() {
-      window.location.href = "index.html?id=" + $(this).data('id');
-    });
-
     $(document).ready(function() {
       $.ajax({
         url: "php/Weinkeller.php",
@@ -81,12 +77,23 @@
           $('#flaschen_title').text(data[0].name + " (" + data[0].jahr + ")");
           $('#flaschen_count').text(data[0].anzahl);
           $('#showInRegal').data("id", data[0].id);
-          if (data[0].type != "Rotwein") {
+          if (data[0].type == "Weißwein") {
             $('#wineimage').attr('src', "imgs/whitewinebottle.jpg");
             $('#flaschen_count').removeClass("badge-custom-Rotwein");
             $('#flaschen_drunk').removeClass("badge-custom-Rotwein");
             $('#flaschen_count').addClass("badge-custom-Weißwein");
             $('#flaschen_drunk').addClass("badge-custom-Weißwein");
+          } else if (data[0].type == "Sekt") {
+            $('#wineimage').attr('src', "imgs/whitewinebottle.jpg");
+            $('#flaschen_count').removeClass("badge-custom-Rotwein");
+            $('#flaschen_drunk').removeClass("badge-custom-Rotwein");
+            $('#flaschen_count').addClass("badge-custom-Sekt");
+            $('#flaschen_drunk').addClass("badge-custom-Sekt");
+          } else if (data[0].type == "Rose") {
+            $('#flaschen_count').removeClass("badge-custom-Rotwein");
+            $('#flaschen_drunk').removeClass("badge-custom-Rotwein");
+            $('#flaschen_count').addClass("badge-custom-Rose");
+            $('#flaschen_drunk').addClass("badge-custom-Rose");
           }
           $('#flaschen_drunk').text(data[0].getrunken);
           $('#flaschen_drunk').text(data[0].getrunken);
@@ -94,6 +101,29 @@
 
         },
         error: function(data) {
+          console.error(data);
+        }
+      });
+    });
+
+    $(document).on("click", "#showInRegal", function() {
+      window.location.href = "index.html?id=" + $(this).data('id');
+    });
+
+    $(document).on("click", "#addOneBottle", function() {
+      $.ajax({
+        url: "php/Weinkeller.php",
+        type: "GET",
+        data: {
+          q: "addOneBottle",
+          bottle: findGetParameter("id")
+        },
+        success: function(data) {
+          console.log("One bottle added to stock");
+          console.log(data);
+        },
+        error: function(data) {
+          console.log("Add one failed!");
           console.error(data);
         }
       });

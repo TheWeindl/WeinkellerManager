@@ -28,6 +28,14 @@
     color: #fff28d;
 }
 
+.rose {
+    color: #ef836e;
+}
+
+.sekt {
+    color: #aaada8;
+}
+
 .black {
     color: black;
 }
@@ -40,6 +48,16 @@
 
 .badge-custom-Weißwein {
     background-color: #fff28d;
+}
+
+.badge-custom-Rose {
+    background-color: #ef836e;
+    color: white;
+}
+
+.badge-custom-Sekt {
+    background-color: #aaada8;
+    color: white;
 }
 
 .bg-custom {
