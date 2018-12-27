@@ -184,13 +184,18 @@ if(isset($_POST['q']) || isset($_GET['q'])) {
             $winery = $_GET["winery"];
             $amount = $_GET["amount"];
 
+            //Check if year was set
+            if($year == NULL) {
+              $year = 0;
+            }
+
             //Add new bottle to the table
             $query = "INSERT INTO Flaschen (name, type, jahr, land, region, weingut, anzahl, getrunken) VALUES ('".$name."','".$type."',".$year.",'".$country."','".$region."','".$winery."',".$amount.",0)";
-if (mysqli_query($connection, $query)) {
-echo "New record created successfully";
-} else {
-echo "Error: " . $query . "<br>" . mysqli_error($connection);
-}
+            if (mysqli_query($connection, $query)) {
+            echo "New record created successfully";
+            } else {
+            echo "Error: " . $query . "<br>" . mysqli_error($connection);
+            }
         }
         mysqli_close($connection);
         die();
